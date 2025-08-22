@@ -1,5 +1,3 @@
-// Utility for mapping DB referral data to API payload format
-// Adapted from provided TypeScript mapping logic
 
 const DEFAULT_CODES = {
   API_TYPE: 'apv2',
@@ -77,7 +75,6 @@ function getTypeSpecificData(apiType, record) {
           codeEPIC: `ref_${record.id}`
         }
       };
-      // Attachment handling omitted for brevity
       return result;
     case 'asv2':
       return {
