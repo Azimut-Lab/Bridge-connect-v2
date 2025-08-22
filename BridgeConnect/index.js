@@ -68,7 +68,7 @@ module.exports.ActivateDBSweep = async function (context, req) {
     let updatedRecords = [];
     for (const body of apiBodies) {
       if (body._sent) {
-        updatedRecords.push({ id: body.id, name: body.your_name, email: body.your_email });
+        updatedRecords.push({ id: body.id, name: body.nom, email: body.courriel });
       }
     }
 
