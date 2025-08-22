@@ -57,10 +57,10 @@ module.exports = async function (context, req) {
         // If response is OK, update DB column 'sent' to true using returned id
         if (response && response.status === 200 && response.data && response.data.id) {
           try {
-            await dbUtils.updateRecordAsSent(response.data.id);
-            context.log(`Record ${response.data.id} marked as sent in DB.`);
+            await dbUtils.updateRecordAsSent(apiBody.id);
+            context.log(`Record ${apiBody.id} marked as sent in DB.`);
           } catch (dbErr) {
-            context.log(`Error updating DB for record ${response.data.id}:`, dbErr);
+            context.log(`Error updating DB for record ${apiBody.id}:`, dbErr);
           }
         }
       } catch (err) {

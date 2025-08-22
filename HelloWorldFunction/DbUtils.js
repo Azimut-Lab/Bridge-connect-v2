@@ -8,6 +8,17 @@ class DbUtils {
     this.connectionString = connectionString;
   }
 
+  async updateRecordAsSent(recordId) {
+    const client = new Client({ connectionString: this.connectionString });
+    await client.connect();
+    try {
+      const query = 'UPDATE referrals SET sent = true WHERE id = $1';
+      await client.query(query, [recordId]);
+    } finally {
+      await client.end();
+    }
+  }
+
   async queryReferrals() {
     const client = new Client({ connectionString: this.connectionString });
     await client.connect();
