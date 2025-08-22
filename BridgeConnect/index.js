@@ -50,7 +50,8 @@ module.exports.ActivateDBSweep = async function (context, req) {
         const response = await sendReferral(context, apiBody);
         context.log(`API response for record ${apiBody.id}:`, response?.data ?? response);
         if (response?.status === 200 && response.data?.id) {
-        await dbUtils.updateRecordAsSent(client, apiBody.id);
+          await dbUtils.updateRecordAsSent(client, apiBody.id);
+          apiBody._sent = true; 
           context.log(`Record ${apiBody.id} marked as sent in DB.`);
         }
       } catch (err) {
@@ -64,16 +65,35 @@ module.exports.ActivateDBSweep = async function (context, req) {
       if (client) await client.end();
 
   if (req) {
-    context.res = {
-      status: error ? 500 : 200,
-      headers: { 'Content-Type': 'application/json' },
-      body: {
-        message: "Hello, World!",
-        error,
-        results,
-        apiBodies,
-        activationResponse
+    let updatedRecords = [];
+    for (const body of apiBodies) {
+      if (body._sent) {
+        updatedRecords.push({ id: body.id, name: body.your_name, email: body.your_email });
       }
-    };
+    }
+
+    if (!error) {
+      let html = `<h2>Records Updated</h2>`;
+      if (updatedRecords.length > 0) {
+        html += `<table border="1"><tr><th>ID</th><th>Name</th><th>Email</th></tr>`;
+        for (const rec of updatedRecords) {
+          html += `<tr><td>${rec.id}</td><td>${rec.name}</td><td>${rec.email}</td></tr>`;
+        }
+        html += `</table>`;
+      } else {
+        html += `<p>No records were updated.</p>`;
+      }
+      context.res = {
+        status: 200,
+        headers: { 'Content-Type': 'text/html' },
+        body: html
+      };
+    } else {
+      context.res = {
+        status: 500,
+        headers: { 'Content-Type': 'text/html' },
+        body: `<h2>Error</h2><pre>${error}</pre>`
+      };
+    }
   }
 }
