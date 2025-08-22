@@ -1,0 +1,42 @@
+require('dotenv').config();
+const DbUtils = require('./DbUtils');
+
+
+module.exports = async function (context, req) {
+  context.log('DB_CONNECTION:', process.env.DB_CONNECTION);
+  context.log('Function started');
+    // Detect timer trigger
+    if (context.bindingData && context.bindingData.timer) {
+      context.log('Timer trigger executed at:', new Date().toISOString());
+    }
+  let results = null;
+  let error = null;
+  try {
+    context.log('Attempting to connect to DB...');
+    let dbUrl = process.env.DB_CONNECTION;
+    if (!dbUrl) {
+      throw new Error('DB_CONNECTION is not set in Azure Application Settings or .env file.');
+    }
+    const dbUtils = new DbUtils(dbUrl);
+    results = await dbUtils.queryReferrals();
+    context.log('Query results:', results);
+  } catch (err) {
+    context.log('DB connection error:', err);
+    error = err.message || String(err);
+  }
+
+  // If HTTP trigger, respond with results
+  if (req) {
+    context.res = {
+      status: error ? 500 : 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: {
+        message: "Hello, World!",
+        error,
+        results
+      }
+    };
+  }
+  // If timer trigger, just log results
+  // (context.done() is not needed in async functions)
+};
