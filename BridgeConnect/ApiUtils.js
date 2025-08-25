@@ -123,16 +123,26 @@ function transformToApiFormat(record) {
   const apiType = mapReferenceTypeToApiType(record.reference_type);
   const typeSpecificData = getTypeSpecificData(apiType, record);
   let autresInfos = record.additional_info || '';
-  if (record.your_name) {
+  if (record.referee_name) {
     autresInfos += (autresInfos ? ' | ' : '') + ` Nom référent: ${record.your_name}`;
   }
-  if (record.your_email) {
+  if (record.referee_email) {
     autresInfos += (autresInfos ? ' | ' : '') + ` Email référent: ${record.your_email}`;
   }
+  if (record.referee_phone) {
+    autresInfos += (autresInfos ? ' | ' : '') + ` Téléphone référent: ${record.telephone}`;
+  }
+    if (record.your_name) {
+    autresInfos += (autresInfos ? ' | ' : '') + ` Nom source: ${record.your_name}`;
+  }
+  if (record.your_email) {
+    autresInfos += (autresInfos ? ' | ' : '') + ` Email source: ${record.your_email}`;
+  }
+
   return {
     id: record.id,
     type: apiType,
-    courrielReferenceur: record.your_email,
+    courrielReferenceur: process.env.COMPANY_EMAIL || record.your_email,
     nomReferenceur: record.your_name,
     nom: record.referee_name,
     telephone: record.referee_phone || '',
