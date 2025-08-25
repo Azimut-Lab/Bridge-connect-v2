@@ -28,7 +28,7 @@ module.exports.ActivateDBSweep = async function (context, req) {
     });
 
       const axios = require('axios');
-      const activationUrl = `${process.env.API_ENDPOINT_KEY}/${process.env.API_BEARER_TOKEN}`;
+      const activationUrl = `${process.env.API_URL}/ConnexionExterne/${process.env.API_BEARER_TOKEN}`;
       let activationResponse = null;
       try {
         const response = await axios.get(activationUrl);

@@ -1,8 +1,8 @@
 const axios = require('axios');
 const { transformToApiFormat } = require('./ApiUtils');
 
-const API_ENDPOINT = process.env.API_ENDPOINT;
-const API_ENDPOINT_KEY = process.env.API_ENDPOINT_KEY;
+const API_ENDPOINT = process.env.API_URL + "/Reference";
+const API_ENDPOINT_KEY = process.env.API_URL + "/ConnexionExterne";
 const API_BEARER_TOKEN = process.env.API_BEARER_TOKEN;
 const WAIT_BETWEEN_API_CALLS_MS = Number(process.env.WAIT_BETWEEN_API_CALLS_MS) || 11000;
 

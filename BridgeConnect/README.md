@@ -1,25 +1,17 @@
-# Azure Function App: Node.js Hello World
+# To setup a new client:
 
-This is the simplest possible Azure Function App using Node.js. It contains a single HTTP-triggered function that returns "Hello, World!".
 
-## Structure
-- `host.json`: Azure Functions host configuration
-- `function.json`: Function binding configuration
-- `index.js`: Function code
-- `package.json`: Node.js project file
+# Create a new function app in the azure portal
+1- run the script  .\deploy.ps1 -CompanyName "{name_of_company}"
 
-## Running Locally
-1. Install [Azure Functions Core Tools](https://docs.microsoft.com/azure/azure-functions/functions-run-local) if not already installed.
-2. Open a terminal in the `BridgeConnect` directory.
-3. Run `npm install` (if you add dependencies).
-4. Start the function app:
-   ```
-   func start
-   ```
-5. Call the endpoint (default: http://localhost:7071/api/ActivateDBSweep)
+# In the azure portal, look for your function app under name_of_company
 
-## Output
-Returns:
-```
-Hello, World!
-```
+# Setup the following .env variables:
+
+DB_CONNECTION ( the DB where anonymous references are sent to)
+API_BEARER_TOKEN ( the permanent token we get from Email)
+COMPANY_EMAIL (this email must exist in the API you are targetting)
+SCHEDULE ( CRON job format, default is 20 minute)
+WAIT_BETWEEN_API_CALLS_MS ( spam protection. default is 11 second)
+API_URL (the API you are targetting, ex: https://pmt-roy-refemp-dev.momentum-tech.sh/api)
+
