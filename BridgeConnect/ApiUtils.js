@@ -70,11 +70,23 @@ function mapFinancialServicesToApiCodes(financialServices) {
 function getTypeSpecificData(apiType, record) {
   switch (apiType) {
     case 'apv2':
+      let fichiers = [];
+      if (record.attachment_name && record.attachment_content) {
+        let base64Content = record.attachment_content;
+        const idx = base64Content.indexOf('base64,');
+        if (idx !== -1) {
+          base64Content = base64Content.substring(idx + 7);
+        }
+        fichiers.push({ name: record.attachment_name, content: base64Content });
+      }
       const result = {
         assuranceParticuliersV2: {
           codeEPIC: `ref_${record.id}`
         }
       };
+      if (fichiers.length > 0) {
+        result.fichiers = fichiers;
+      }
       return result;
     case 'asv2':
       return {
