@@ -122,6 +122,13 @@ function getTypeSpecificData(apiType, record) {
 function transformToApiFormat(record) {
   const apiType = mapReferenceTypeToApiType(record.reference_type);
   const typeSpecificData = getTypeSpecificData(apiType, record);
+  let autresInfos = record.additional_info || '';
+  if (record.your_name) {
+    autresInfos += (autresInfos ? ' | ' : '') + ` Nom référent: ${record.your_name}`;
+  }
+  if (record.your_email) {
+    autresInfos += (autresInfos ? ' | ' : '') + ` Email référent: ${record.your_email}`;
+  }
   return {
     id: record.id,
     type: apiType,
@@ -130,7 +137,7 @@ function transformToApiFormat(record) {
     nom: record.referee_name,
     telephone: record.referee_phone || '',
     courriel: record.referee_email || '',
-    autresInfos: record.additional_info || '',
+    autresInfos,
     payable: true,
     ...typeSpecificData
   };
