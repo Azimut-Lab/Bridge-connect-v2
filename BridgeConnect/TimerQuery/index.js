@@ -14,17 +14,21 @@ module.exports = async function (context, timer) {
     const results = await dbUtils.queryReferrals(client);
     context.log('Query results:', results);
     const apiBodies = results.map(transformToApiFormat);
-    await activateApiToken(context);
-    for (const apiBody of apiBodies) {
-      try {
-        const response = await sendReferral(context, apiBody);
-        context.log(`API response for record ${apiBody.id}:`, response?.data ?? response);
-        if (response?.status === 200 && response.data?.id) {
-          await dbUtils.updateRecordAsSent(client, apiBody.id);
-          context.log(`Record ${apiBody.id} marked as sent in DB.`);
+    if (apiBodies.length === 0) {
+      context.log('No unsent referrals found. No API calls made.');
+    } else {
+      await activateApiToken(context);
+      for (const apiBody of apiBodies) {
+        try {
+          const response = await sendReferral(context, apiBody);
+          context.log(`API response for record ${apiBody.id}:`, response?.data ?? response);
+          if (response?.status === 200 && response.data?.id) {
+            await dbUtils.updateRecordAsSent(client, apiBody.id);
+            context.log(`Record ${apiBody.id} marked as sent in DB.`);
+          }
+        } catch (err) {
+          context.log(`Error sending referral for record ${apiBody.id}:`, err);
         }
-      } catch (err) {
-        context.log(`Error sending referral for record ${apiBody.id}:`, err);
       }
     }
   } catch (err) {
