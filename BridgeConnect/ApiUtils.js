@@ -81,7 +81,7 @@ function getTypeSpecificData(apiType, record) {
       }
       const result = {
         assuranceParticuliersV2: {
-          codeEPIC: `ref_${record.id}`
+          codeEPIC: ``
         }
       };
       if (fichiers.length > 0) {
