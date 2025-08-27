@@ -135,21 +135,21 @@ function transformToApiFormat(record) {
   const apiType = mapReferenceTypeToApiType(record.reference_type);
   const typeSpecificData = getTypeSpecificData(apiType, record);
   let autresInfos = record.additional_info || '';
-  if (record.referee_name) {
-    autresInfos += (autresInfos ? ' | ' : '') + ` Nom référent: ${record.referee_name}`;
-  }
-  if (record.referee_email) {
-    autresInfos += (autresInfos ? ' | ' : '') + ` Email référent: ${record.referee_email}`;
-  }
-  if (record.referee_phone) {
-    autresInfos += (autresInfos ? ' | ' : '') + ` Téléphone référent: ${record.referee_phone}`;
-  }
-    if (record.your_name) {
-    autresInfos += (autresInfos ? ' | ' : '') + ` Nom source: ${record.your_name}`;
-  }
-  if (record.your_email) {
-    autresInfos += (autresInfos ? ' | ' : '') + ` Email source: ${record.your_email}`;
-  }
+  // if (record.referee_name) {
+  //   autresInfos += (autresInfos ? ' | ' : '') + ` Nom référent: ${record.referee_name}`;
+  // }
+  // if (record.referee_email) {
+  //   autresInfos += (autresInfos ? ' | ' : '') + ` Email référent: ${record.referee_email}`;
+  // }
+  // if (record.referee_phone) {
+  //   autresInfos += (autresInfos ? ' | ' : '') + ` Téléphone référent: ${record.referee_phone}`;
+  // }
+  //   if (record.your_name) {
+  //   autresInfos += (autresInfos ? ' | ' : '') + ` Nom source: ${record.your_name}`;
+  // }
+  // if (record.your_email) {
+  //   autresInfos += (autresInfos ? ' | ' : '') + ` Email source: ${record.your_email}`;
+  // }
 
   return {
     id: record.id,
