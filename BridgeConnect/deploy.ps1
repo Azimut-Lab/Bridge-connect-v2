@@ -27,9 +27,23 @@ az storage account create --name $storageName --location $location --resource-gr
 az functionapp delete --name $functionAppName --resource-group $resourceGroup --only-show-errors
 az functionapp create --resource-group $resourceGroup --consumption-plan-location $location --name $functionAppName --storage-account $storageName --runtime node --functions-version 4
 
-# Set environment variables from .env
-$settings = $envVars.GetEnumerator() | ForEach-Object { "$($_.Key)=$($_.Value)" }
-az functionapp config appsettings set --name $functionAppName --resource-group $resourceGroup --settings $settings
+
+# Get existing app settings from Azure
+$existingSettings = az functionapp config appsettings list --name $functionAppName --resource-group $resourceGroup | ConvertFrom-Json
+
+# Only set new settings from .env
+$settingsToSet = @()
+foreach ($kv in $envVars.GetEnumerator()) {
+    $key = $kv.Key
+    $value = $kv.Value
+    if (-not ($existingSettings | Where-Object { $_.name -eq $key })) {
+        $settingsToSet += "$key=$value"
+    }
+}
+
+if ($settingsToSet.Count -gt 0) {
+    az functionapp config appsettings set --name $functionAppName --resource-group $resourceGroup --settings $settingsToSet
+}
 
 # Deploy the function
 func azure functionapp publish $functionAppName --javascript
