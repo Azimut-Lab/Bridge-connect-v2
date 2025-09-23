@@ -229,7 +229,7 @@ function getTypeSpecificData(apiType, record) {
       const result_sfv2 = {
         servicesFinanciersV2: {
           nomEntreprise: record.company_name || 'Entreprise',
-          nombreEmployes: parseInt(record.number_of_employees || '0'),
+          nombreEmployes: parseInt(record.number_of_employees || '1'),
           typeService: mapFinancialServicesToApiCodes(record.financial_services)
         }
       };
