@@ -4,8 +4,6 @@ node_modules/
 # Azure Functions local settings
 local.settings.json
 
-# Environment variables
-.env
 
 # VS Code settings
 .vscode/
