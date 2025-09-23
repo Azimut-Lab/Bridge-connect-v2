@@ -2,32 +2,39 @@
 const DEFAULT_CODES = {
   API_TYPE: 'apv2',
   AVANTAGES_SOCIAUX: 'asv2',
-  FINANCIAL_SERVICES: 'sfv2'
+  FINANCIAL_SERVICES: 'sfv2',
+  CAUTIONNEMENT: 'ccn'
 };
 
 const API_TYPE_MAPPING = {
-  'assurance particuliers': 'apv2',
-  'avantages sociaux': 'asv2',
+  'particuliers': 'apv2',
+  'avantages-sociaux': 'asv2',
   'cautionnement': 'cv2',
-  'assurance entreprise': 'epv2',
-  'services financiers': 'sfv2'
+  'entreprises': 'epv2',
+  'services-financiers': 'sfv2',
+  'entreprises_grandeentreprise': 'egv2',
+  'entreprises_agricole': 'eav2'
 };
 
 const AVANTAGES_SOCIAUX_SERVICE_MAPPING = {
-  'sante': 'sante',
-  'dentaire': 'dentaire',
-  'vue': 'vue',
-  'invalidite': 'invalidite',
-  'vie': 'vie',
-  'voyage': 'voyage',
-  'soins': 'soins'
+  'assurance-collective': 'asc',
+  'regime-retraite': 'rer',
+  'consultation-rh': 'crh'
 };
 
 const FINANCIAL_SERVICES_MAPPING = {
-  'hypotheque': 'hypotheque',
-  'pret': 'pret',
-  'investissement': 'investissement',
-  'assurance': 'assurance'
+  'assurance-salaire': 'asa',
+  'placement': 'plc',
+  'hypotheque': 'hyp',
+  'ligne-personnelle': 'lip',
+  'ligne-commerciale': 'lic',
+  'assurances-voyages': 'asvo'
+};
+
+const CAUTIONNEMENT_MAPPING = {
+  'cautionnement-contrats': 'ccn',
+  'cautionnement-commerciaux': 'cco',
+  'assurance-credit-depots': 'acd'
 };
 
 function mapReferenceTypeToApiType(referenceType) {
@@ -67,6 +74,10 @@ function mapFinancialServicesToApiCodes(financialServices) {
   return mapServicesToApiCodes(financialServices, FINANCIAL_SERVICES_MAPPING, DEFAULT_CODES.FINANCIAL_SERVICES);
 }
 
+function mapCautionnementTypeToApiCodes(typeCautionnement) {
+  return mapServicesToApiCodes(typeCautionnement, CAUTIONNEMENT_MAPPING, DEFAULT_CODES.CAUTIONNEMENT);
+}
+
 function getTypeSpecificData(apiType, record) {
   switch (apiType) {
     case 'apv2':
@@ -89,23 +100,104 @@ function getTypeSpecificData(apiType, record) {
       }
       return result;
     case 'asv2':
-      return {
+      let fichiers = [];
+      if (record.attachment_name && record.attachment_content) {
+        let base64Content = record.attachment_content;
+        const idx = base64Content.indexOf('base64,');
+        if (idx !== -1) {
+          base64Content = base64Content.substring(idx + 7);
+        }
+        fichiers.push({ name: record.attachment_name, content: base64Content });
+      }
+      const result = {
         avantageSociauxV2: {
           typeService: mapAvantagesSociauxToApiCodes(record.avantages_sociaux_services),
           nomEntreprise: record.company_name || 'Entreprise',
           nombreEmployes: parseInt(record.number_of_employees || '0')
         }
       };
+      if (fichiers.length > 0) {
+        result.fichiers = fichiers;
+      }
+      return result;
     case 'cv2':
-      return {
+      let fichiers = [];
+      if (record.attachment_name && record.attachment_content) {
+        let base64Content = record.attachment_content;
+        const idx = base64Content.indexOf('base64,');
+        if (idx !== -1) {
+          base64Content = base64Content.substring(idx + 7);
+        }
+        fichiers.push({ name: record.attachment_name, content: base64Content });
+      }
+      const result = {
         cautionnementV2: {
           etreContacte: true,
-          typeService: mapAvantagesSociauxToApiCodes(record.cautionnement_services),
+          typeService: mapCautionnementTypeToApiCodes(record.cautionnement_services),
           nomEntreprise: record.company_name || 'Entreprise'
         }
       };
-    case 'epv2':
-      return {
+      if (fichiers.length > 0) {
+        result.fichiers = fichiers;
+      }
+      return result;
+    case 'epv2': // PME
+      let fichiers = [];
+      if (record.attachment_name && record.attachment_content) {
+        let base64Content = record.attachment_content;
+        const idx = base64Content.indexOf('base64,');
+        if (idx !== -1) {
+          base64Content = base64Content.substring(idx + 7);
+        }
+        fichiers.push({ name: record.attachment_name, content: base64Content });
+      }
+      const result = {
+        assuranceEntrepriseV2: {
+          nomEntreprise: record.company_name || 'Entreprise',
+          etreContacte: true,
+          typesEntreprisePossibles: [
+            { id: 'epv2', libelle: 'PME', actif: true }
+          ]
+        }
+      };
+      if (fichiers.length > 0) {
+        result.fichiers = fichiers;
+      }
+      return result;
+    case 'eav2': // Agricole
+      let fichiers = [];
+      if (record.attachment_name && record.attachment_content) {
+        let base64Content = record.attachment_content;
+        const idx = base64Content.indexOf('base64,');
+        if (idx !== -1) {
+          base64Content = base64Content.substring(idx + 7);
+        }
+        fichiers.push({ name: record.attachment_name, content: base64Content });
+      }
+      const result = {
+        assuranceEntrepriseV2: {
+          nomEntreprise: record.company_name || 'Entreprise',
+          etreContacte: true,
+          typesEntreprisePossibles: [
+            { id: 'eav2', libelle: 'Agricole', actif: true }
+          ]
+        }
+      };
+      if (fichiers.length > 0) {
+        result.fichiers = fichiers;
+      }
+      return result;      
+    case 'egv2': // Grande entreprise
+      let fichiers = [];
+      if (record.attachment_name && record.attachment_content) {
+        let base64Content = record.attachment_content;
+        const idx = base64Content.indexOf('base64,');
+        if (idx !== -1) {
+          base64Content = base64Content.substring(idx + 7);
+        }
+        fichiers.push({ name: record.attachment_name, content: base64Content });
+      }
+      const result = {
         assuranceEntrepriseV2: {
           nomEntreprise: record.company_name || 'Entreprise',
           etreContacte: true,
@@ -114,18 +206,35 @@ function getTypeSpecificData(apiType, record) {
           ]
         }
       };
+      if (fichiers.length > 0) {
+        result.fichiers = fichiers;
+      }
+      return result;
     case 'sfv2':
-      return {
+      let fichiers = [];
+      if (record.attachment_name && record.attachment_content) {
+        let base64Content = record.attachment_content;
+        const idx = base64Content.indexOf('base64,');
+        if (idx !== -1) {
+          base64Content = base64Content.substring(idx + 7);
+        }
+        fichiers.push({ name: record.attachment_name, content: base64Content });
+      }
+      const result = {
         servicesFinanciersV2: {
           nomEntreprise: record.company_name || 'Entreprise',
           nombreEmployes: parseInt(record.number_of_employees || '0'),
           typeService: mapFinancialServicesToApiCodes(record.financial_services)
         }
       };
+      if (fichiers.length > 0) {
+        result.fichiers = fichiers;
+      }
+      return result;
     default:
       return {
         assuranceParticuliersV2: {
-          codeEPIC: `ref_${record.id}`
+          codeEPIC: ``
         }
       };
   }
@@ -160,7 +269,7 @@ function transformToApiFormat(record) {
     telephone: record.referee_phone || '',
     courriel: record.referee_email || '',
     autresInfos,
-    payable: true,
+    payable: process.env.PAYABLE === 'true',
     ...typeSpecificData
   };
 }
