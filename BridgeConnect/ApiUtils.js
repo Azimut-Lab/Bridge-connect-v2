@@ -271,7 +271,7 @@ function transformToApiFormat(record) {
     id: record.id,
     type: apiType,
     courrielReferenceur: process.env.COMPANY_EMAIL || record.your_email,
-    nomReferenceur: record.your_name,
+    nomReferenceur: record.your_name || record.referee_name,
     nom: record.referee_name,
     telephone: record.referee_phone || '',
     courriel: record.referee_email || '',
