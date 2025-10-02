@@ -274,7 +274,7 @@ function transformToApiFormat(record) {
     nomReferenceur: record.your_name || record.referee_name,
     nom: record.referee_name,
     telephone: record.referee_phone || '',
-    courriel: record.referee_email || '',
+    courriel: record.referee_email || null,
     autresInfos,
     payable: process.env.PAYABLE === 'true',
     ...typeSpecificData
